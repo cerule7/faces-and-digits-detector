@@ -1,33 +1,72 @@
 from numpy import empty
 import pickle
+from dataset import Dataset
+from image import Image
 
-f = open("./facedata/facedatatrain", "r")
+f = open("./digitdata/trainingimages", "r")
 reader = f.readlines()
 
-labels = open("./facedata/facedatatrainlabels", "r")
+labels = open("./digitdata/traininglabels", "r")
 lreader = labels.readlines()
 
-imageList = []
-labelList = []
+trainImageList = []
 
-for i in range(0, 451):
-    image = empty([70, 60])
-    for r in range(0, 70):
+for i in range(0, 5000):
+    image_array = empty([28, 28])
+    for r in range(0, 28):
         row = reader[r]
-        for c in range(0, 60):
+        for c in range(0, 28):
             if row[c] == '#' or row[c] == '+':
-                image[r][c] = 1
+                image_array[r][c] = 1
             else:
-                image[r][c] = 0
+                image_array[r][c] = 0
     label = lreader[i]
-    labelList.append(label)
-    imageList.append(image)
-    if i % 50 == 0:
-        print(label)
-        print(image)
+    image = Image(image_array, label)
+    trainImageList.append(image)
 
-output_file = open('processed_train_images', 'wb')
-pickle.dump(imageList, output_file)
+f = open("./digitdata/testimages", "r")
+reader = f.readlines()
 
-output_file = open('processed_train_labels', 'wb')
-pickle.dump(labelList, output_file)
+labels = open("./digitdata/testlabels", "r")
+lreader = labels.readlines()
+
+testImageList = []
+
+for i in range(0, 1000):
+    image_array = empty([28, 28])
+    for r in range(0, 28):
+        row = reader[r]
+        for c in range(0, 28):
+            if row[c] == '#' or row[c] == '+':
+                image_array[r][c] = 1
+            else:
+                image_array[r][c] = 0
+    label = lreader[i]
+    image = Image(image_array, label)
+    testImageList.append(image)
+
+f = open("./digitdata/validationimages", "r")
+reader = f.readlines()
+
+labels = open("./digitdata/validationlabels", "r")
+lreader = labels.readlines()
+
+valImageList = []
+
+for i in range(0, 1000):
+    image_array = empty([28, 28])
+    for r in range(0, 28):
+        row = reader[r]
+        for c in range(0, 28):
+            if row[c] == '#' or row[c] == '+':
+                image_array[r][c] = 1
+            else:
+                image_array[r][c] = 0
+    label = lreader[i]
+    image = Image(image_array, label)
+    valImageList.append(image)
+
+dataset = Dataset(trainImageList, testImageList, valImageList)
+output_file = open('digits_dataset', 'wb')
+pickle.dump(dataset, output_file)
+
