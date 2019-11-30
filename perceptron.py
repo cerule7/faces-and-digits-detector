@@ -1,6 +1,6 @@
 import random
 
-# returns vector of weights 
+# returns vector of weights
 def perceptronFaceClassifierTrainer(numColumns, numRows, trainData, labelVector):
 	totalNumFeatures = (numColumns + 1) * (numRows + 1)
 	featureVectorList = [] #list of feature vectors for each image in training data set
@@ -10,7 +10,7 @@ def perceptronFaceClassifierTrainer(numColumns, numRows, trainData, labelVector)
 	bias = random.random()
 	perfectRun = False #boolean for when to stop training
 	iterations = 0 #counter for number of loops through training set
-	while (perfectRun is False or iterations < 9999): 
+	while (perfectRun is False or iterations < 9999):
 		successCounter = 0
 		for i in trainData:
 			predFunction = 0
@@ -42,7 +42,7 @@ def isFace(image, weightVector, c, r):
 	imageFeatures = featureVector(c, r, image)
 	predFunction = 0
 	for i in imageFeatures:
-		predFunction += imageFeatures[i] * weightVector[i] 
+		predFunction += imageFeatures[i] * weightVector[i]
 	predFunction += weightVector[len(weightVector) - 1] #bias
 	if (predFunction <= 0):
 		return 0
@@ -61,4 +61,3 @@ def isFace(image, weightVector, c, r):
 # 	biasVector = []
 # 	for i in biasVector:
 # 		biasVector[i] = random.random()
-	
