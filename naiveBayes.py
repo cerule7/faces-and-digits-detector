@@ -1,15 +1,15 @@
 def featureProbMatrixGen(numColumns, numRows, trainData, labelVector):
-    matrixVector = [][][]
+    matrixVector = []
     totalNumFeatures = (numColumns + 1) * (numRows + 1)
     for i in len(labelVector):
         matrixVector[i].append(None) #dummy values so we can index latter
     for i in matrixVector:
         for j in range(0, totalNumFeatures):
             matrixVector[i].append(None) #again just making the data structure with empty values to index later
-        for k in range(0, trainData[i].size())
+        for k in range(0, trainData[i].size()):
             matrixVector[i][k].append(0)
-	for i in trainData:
-		feature = featureVector(numColumns, numRows, trainData[i]) #feature vector for ith training image
+    for i in trainData:
+        feature = featureVector(numColumns, numRows, trainData[i]) #feature vector for ith training image
         for j in matrixVector[labelVector[i]]:
             matrixVector[labelVector[i]][j][feature[j]] += 1
              #adding one to position in probability matrix in position for each given feature and its respective value.
@@ -17,7 +17,7 @@ def featureProbMatrixGen(numColumns, numRows, trainData, labelVector):
     for i in matrixVector:
         for j in matrixVector[i]:
             sum = 0  #total of  individual feature values
-            for k in matrixVector[i][j]
+            for k in matrixVector[i][j]:
                 sum += matrixVector[i][j][k]
             for k in matrixVector[i][j]:
                 matrixVector[i][j][k] = matrixVector[i][j][k]/sum
