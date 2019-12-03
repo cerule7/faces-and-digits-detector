@@ -3,19 +3,19 @@ import pickle
 from dataset import Dataset
 from image import Image
 
-f = open("./digitdata/trainingimages", "r")
+f = open("./facedata/facedatatrain", "r")
 reader = f.readlines()
 
-labels = open("./digitdata/traininglabels", "r")
+labels = open("./facedata/facedatatrainlabels", "r")
 lreader = labels.readlines()
 
 trainImageList = []
 
-for i in range(0, 5000):
-    image_array = empty([28, 28])
-    for r in range(0, 28):
+for i in range(0, 451):
+    image_array = empty([74, 60])
+    for r in range(0, 74):
         row = reader[r]
-        for c in range(0, 28):
+        for c in range(0, 60):
             if row[c] == '#' or row[c] == '+':
                 image_array[r][c] = 1
             else:
@@ -24,19 +24,19 @@ for i in range(0, 5000):
     image = Image(image_array, label)
     trainImageList.append(image)
 
-f = open("./digitdata/testimages", "r")
+f = open("./facedata/facedatatest", "r")
 reader = f.readlines()
 
-labels = open("./digitdata/testlabels", "r")
+labels = open("./facedata/facedatatestlabels", "r")
 lreader = labels.readlines()
 
 testImageList = []
 
-for i in range(0, 1000):
-    image_array = empty([28, 28])
-    for r in range(0, 28):
+for i in range(0, 150):
+    image_array = empty([74, 60])
+    for r in range(0, 74):
         row = reader[r]
-        for c in range(0, 28):
+        for c in range(0, 60):
             if row[c] == '#' or row[c] == '+':
                 image_array[r][c] = 1
             else:
@@ -45,19 +45,19 @@ for i in range(0, 1000):
     image = Image(image_array, label)
     testImageList.append(image)
 
-f = open("./digitdata/validationimages", "r")
+f = open("./facedata/facedatavalidation", "r")
 reader = f.readlines()
 
-labels = open("./digitdata/validationlabels", "r")
+labels = open("./facedata/facedatavalidationlabels", "r")
 lreader = labels.readlines()
 
 valImageList = []
 
-for i in range(0, 1000):
-    image_array = empty([28, 28])
-    for r in range(0, 28):
+for i in range(0, 301):
+    image_array = empty([74, 60])
+    for r in range(0, 74):
         row = reader[r]
-        for c in range(0, 28):
+        for c in range(0, 60):
             if row[c] == '#' or row[c] == '+':
                 image_array[r][c] = 1
             else:
@@ -67,6 +67,6 @@ for i in range(0, 1000):
     valImageList.append(image)
 
 dataset = Dataset(trainImageList, testImageList, valImageList)
-output_file = open('digits_dataset', 'wb')
+output_file = open('faces_dataset', 'wb')
 pickle.dump(dataset, output_file)
 
