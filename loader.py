@@ -11,18 +11,23 @@ lreader = labels.readlines()
 
 trainImageList = []
 
-for i in range(0, 5000):
+j = 0
+i = 0
+while(j < len(reader)):
     image_array = empty([28, 28])
     for r in range(0, 28):
-        row = reader[r]
+        row = reader[j]
+        j += 1
         for c in range(0, 28):
             if row[c] == '#' or row[c] == '+':
                 image_array[r][c] = 1
             else:
                 image_array[r][c] = 0
     label = lreader[i]
+    i += 1
     image = Image(image_array, label)
     trainImageList.append(image)
+
 
 f = open("./digitdata/testimages", "r")
 reader = f.readlines()
@@ -32,16 +37,20 @@ lreader = labels.readlines()
 
 testImageList = []
 
-for i in range(0, 1000):
+j = 0
+i = 0
+while(j < len(reader)):
     image_array = empty([28, 28])
     for r in range(0, 28):
-        row = reader[r]
+        row = reader[j]
+        j += 1
         for c in range(0, 28):
             if row[c] == '#' or row[c] == '+':
                 image_array[r][c] = 1
             else:
                 image_array[r][c] = 0
     label = lreader[i]
+    i += 1
     image = Image(image_array, label)
     testImageList.append(image)
 
@@ -53,16 +62,20 @@ lreader = labels.readlines()
 
 valImageList = []
 
-for i in range(0, 1000):
+j = 0
+i = 0
+while(j < len(reader)):
     image_array = empty([28, 28])
     for r in range(0, 28):
-        row = reader[r]
+        row = reader[j]
+        j += 1
         for c in range(0, 28):
             if row[c] == '#' or row[c] == '+':
                 image_array[r][c] = 1
             else:
                 image_array[r][c] = 0
     label = lreader[i]
+    i += 1
     image = Image(image_array, label)
     valImageList.append(image)
 
