@@ -7,7 +7,7 @@ def featureVector(image, r, c, A, Y):
     featWidth = int(A / r)  #how many pixels make the horizontal dimension of a feature rectangle
     featHeight = int(Y / c) ##how many pixels make the vertical dimension of a feature rectangle
     for i in range(0, r):
-        maxHorizontal = i*featWidth + featWidth
+        maxHorizontal = i * featWidth + featWidth
         verticalPosition = 0
         featCount = 0 #counts number of black pixels in feature rectangle
         for j in range(0, Y):
