@@ -1,3 +1,5 @@
+from utils import featureVector 
+
 def featureProbMatrixGen(numColumns, numRows, trainData, labelVector):
     matrixVector = []
     totalNumFeatures = (numColumns + 1) * (numRows + 1)
