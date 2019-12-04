@@ -1,5 +1,3 @@
-import pickle
-
 # digit: r = 14, c = 14, A = 28, Y = 28
 # face: r = 10, c = 10, A = 70, Y = 60
 def featureVector(image, r, c, A, Y):
@@ -20,8 +18,7 @@ def featureVector(image, r, c, A, Y):
                     featCount += 1
     return featVector
 
-# faces = pickle.load(open( "faces_dataset", "rb"))
-# print(featureVector(faces.testData[0].image, 10, 10, 70, 60))
-# print(featureVector(faces.testData[5].image, 10, 10, 70, 60))
-# print(faces.testData[0].image == faces.testData[1].image)
-# print(featureVector(faces.testData[1].image, 10, 10, 70, 60) == featureVector(faces.testData[0].image, 10, 10, 70, 60))
+# digits = pickle.load(open( "digits_dataset", "rb"))
+# print(featureVector(digits.testData[0].image, 14, 14, 28, 28))
+# print(featureVector(digits.testData[1].image, 14, 14, 28, 28))
+# print(featureVector(digits.testData[1].image, 14, 14, 28, 28) == featureVector(digits.testData[0].image, 14, 14, 28, 28))

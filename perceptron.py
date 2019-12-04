@@ -61,14 +61,14 @@ def isFace(image, weightVector):
 def perceptronDigitClassifierTrainer(trainData):
 	featureVectorList = list()  #list of feature vectors for each image in training data set
 	for i in trainData:
-		featureVectorList.append(featureVector(i.image, r=14, c=14, A=28, Y=28))
+		featureVectorList.append(featureVector(i.image, r=28, c=7, A=28, Y=28))
 	weightVector = [[random.random() for i in range(len(featureVectorList[1]))] for j in range(0, 10)]
 	biasVector = [random.random() for i in range(0, 10)]
 
 	perfectRun = False #boolean for when to stop training
 	iterations = 0 #counter for number of loops through training set
 
-	while (perfectRun is False and iterations < 1500):
+	while (perfectRun is False and iterations < 50):
 		successCounter = 0
 		predictorVector = [0 for x in range(0, 10)] #holds values of prediction for each digit respectively 
 
@@ -78,10 +78,12 @@ def perceptronDigitClassifierTrainer(trainData):
 			for k in range(0, len(predictorVector)):
 				if (perfectRun == True):
 					break
+
 				for j in range(0, len(featureVectorList[i])): #iterating over feature values of image 
 					predictorVector[k] += featureVectorList[i][j] * weightVector[k][j]
 
 				predictorVector[k] += biasVector[k]
+
 				prediction = findHighestPrediction(predictorVector)
 				if(prediction == int(trainData[i].label)): #got prediction correct
 					successCounter += 1
@@ -92,10 +94,10 @@ def perceptronDigitClassifierTrainer(trainData):
 					for x in range(0, len(weightVector[prediction])): #punishment for wrong prediction
 						weightVector[prediction][x] -= featureVectorList[i][x] 
 						biasVector[prediction] -= 1
-					for x in range(0, len(weightVector[int(trainData[i].label)])): #enforcing ground truth weights
-						weightVector[int(trainData[i].label)][x] += featureVectorList[i][x]
+						weightVector[int(trainData[i].label)][x] += featureVectorList[i][x] #enforcing ground truth weights
 						biasVector[int(trainData[i].label)] += 1
-		if iterations % 100== 0:
+						
+		if iterations % 10== 0:
 			print('training iteration {} complete'.format(iterations))
 		iterations += 1
 
@@ -113,12 +115,12 @@ def findHighestPrediction(predictions):
 	return maxIndex
 
 def whichDigit(image, weights):
-	imageFeatures = featureVector(image.image, r=14, c=14, A=28, Y=28)
+	imageFeatures = featureVector(image.image, r=28, c=7, A=28, Y=28)
 	predictionVector = [0 for x in range(0, 10)]
 	for i in range(0, len(weights)):
 		for j in range(0, len(weights[i])):
 			if (j != len(weights[i]) - 1): #j is not at bias position)
-				predictionVector[i] = weights[i][j] * imageFeatures[j]
+				predictionVector[i] += weights[i][j] * imageFeatures[j]
 			else: 
 				predictionVector[i] += weights[i][j] #adding bias
 	return findHighestPrediction(predictionVector)
