@@ -14,7 +14,7 @@ def featureProbMatrixGen(numColumns, numRows, numLabels, A, Y, trainData):
         for j in range(0, len(matrixVector[i])):
             total = 0  #total of  individual feature values
             for k in range(0, len(matrixVector[i][j])):
-                total += matrixVector[i][j][k]
+                total += int(matrixVector[i][j][k])
             for k in range(0, len(matrixVector[i][j])):
                 matrixVector[i][j][k] /= total
 
@@ -23,13 +23,12 @@ def featureProbMatrixGen(numColumns, numRows, numLabels, A, Y, trainData):
         for j in range(0, len(matrixVector[i])):
             for k in range(0, len(matrixVector[i][j])):
                 if(matrixVector[i][j][k] == 0):
-                    matrixVector[i][j][k] = .0000000001
+                    matrixVector[i][j][k] = .001
     return matrixVector
 
 def isFaceBayes(image, trainingData, c, r):
     matrixVector = featureProbMatrixGen(c, r, 2, A=70, Y=60, trainData=trainingData)
     imageFeatures = featureVector(image.image, r=10, c=10, A=70, Y=60)
-    probFace = 0
     faceCount = 0
     for i in trainingData:
         if(int(i.label) == 1):
@@ -47,8 +46,8 @@ def isFaceBayes(image, trainingData, c, r):
     probFaceGivenImage = probImageGivenFace * probFace
     probNotFaceGivenImage = probImageGivenNotFace * probNotFace
     if(probFaceGivenImage > probNotFaceGivenImage):
-        return 0
-    return 1
+        return 1
+    return 0
 
 def whichDigitBayes(image, trainingData, c, r):
     matrixVector = featureProbMatrixGen(c, r, 10, A=28, Y=28, trainData=trainingData)
