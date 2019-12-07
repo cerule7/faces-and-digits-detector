@@ -44,9 +44,9 @@ def testNNDigits():
 		numtotal = len(digits.testData)
 		trainFeatureVectors = []
 		for i in digits.trainData[0:imageSetLength]:
-			trainFeatureVectors.append(featureVector(i.image, 14, 4, 28, 28))
+			trainFeatureVectors.append(featureVector(i.image, 4, 14, 28, 28))
 		for i in range(0, numtotal):
-			prediction = NNClassifier(digits.testData[i],  digits.trainData[0:imageSetLength], trainFeatureVectors, 14, 4, 28, 28)
+			prediction = NNClassifier(digits.testData[i],  digits.trainData[0:imageSetLength], trainFeatureVectors, 4, 14, 28, 28)
 			reality = digits.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
@@ -55,9 +55,9 @@ def testNNDigits():
 	numtotal = len(digits.testData)
 	trainFeatureVectors = []
 	for i in digits.trainData:
-		trainFeatureVectors.append(featureVector(i.image, 14, 4, 28, 28))
+		trainFeatureVectors.append(featureVector(i.image, 4, 14, 28, 28))
 	for i in range(0, numtotal):
-		prediction = NNClassifier(digits.testData[i], digits.trainData, trainFeatureVectors, 14, 4, 28, 28)
+		prediction = NNClassifier(digits.testData[i], digits.trainData, trainFeatureVectors, 4, 14, 28, 28)
 		reality = digits.testData[i].label
 		if int(prediction) == int(reality):
 			numcorrect += 1
@@ -76,17 +76,16 @@ def testPerceptronFaces():
 				numcorrect += 1
 		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
 	# to catch the 100%
-	if len(faces.trainData) % int(len(faces.trainData) * 0.1) != 0:
-		weights = perceptronFaceClassifierTrainer(faces.trainData)
-		numcorrect = 0
-		numtotal = len(faces.testData)
-		for i in range(0, numtotal):
-			prediction = isFace(faces.testData[i], weights)
-			reality = faces.testData[i].label
-			if int(prediction) == int(reality):
-				numcorrect += 1
-		print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-		winsound.Beep(frequency, duration)
+	weights = perceptronFaceClassifierTrainer(faces.trainData)
+	numcorrect = 0
+	numtotal = len(faces.testData)
+	for i in range(0, numtotal):
+		prediction = isFace(faces.testData[i], weights)
+		reality = faces.testData[i].label
+		if int(prediction) == int(reality):
+			numcorrect += 1
+	print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+	winsound.Beep(frequency, duration)
 
 def testPerceptronDigits():
 	trainingData = digits.trainData
@@ -102,18 +101,16 @@ def testPerceptronDigits():
 				numcorrect += 1
 		winsound.Beep(frequency, duration)
 		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(trainingData) * 100))))
-	# to catch the 100%
-	if len(trainingData) % int(len(trainingData) * 0.1) != 0:
-		weights = perceptronDigitClassifierTrainer(trainingData)
-		numcorrect = 0
-		numtotal = int(len(digits.testData) * 0.10)
-		for i in range(0, numtotal):
-			prediction = whichDigit(digits.testData[i], weights)
-			reality = digits.testData[i].label
-			if int(prediction) == int(reality):
-				numcorrect += 1
-		print('total accuracy on digits: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-		winsound.Beep(frequency, duration * 10)
+	weights = perceptronDigitClassifierTrainer(trainingData)
+	numcorrect = 0
+	numtotal = int(len(digits.testData) * 0.10)
+	for i in range(0, numtotal):
+		prediction = whichDigit(digits.testData[i], weights)
+		reality = digits.testData[i].label
+		if int(prediction) == int(reality):
+			numcorrect += 1
+	print('total accuracy on digits: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+	winsound.Beep(frequency, duration * 10)
 
 def testNaiveBayesFace():
 	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
@@ -126,15 +123,12 @@ def testNaiveBayesFace():
 				numcorrect += 1
 		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
 	# to catch the 100%
-	if len(faces.trainData) % int(len(faces.trainData) * 0.1) != 0:
-		numcorrect = 0
-		numtotal = len(faces.testData)
-		for i in range(0, numtotal):
-			prediction = isFaceBayes(faces.testData[i], faces.trainData, 14, 14)
-			reality = faces.testData[i].label
-			if int(prediction) == int(reality):
-				numcorrect += 1
-		print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-		winsound.Beep(frequency, duration)
-
-testNNDigits()
+	numcorrect = 0
+	numtotal = len(faces.testData)
+	for i in range(0, numtotal):
+		prediction = isFaceBayes(faces.testData[i], faces.trainData, 14, 14)
+		reality = faces.testData[i].label
+		if int(prediction) == int(reality):
+			numcorrect += 1
+	print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+	winsound.Beep(frequency, duration)
