@@ -3,16 +3,16 @@ from naiveBayes import isFaceBayes
 from nearestNeighbors import NNClassifier
 import pickle
 import random
+from statistics import stdev, mean
+import matplotlib.pyplot as py
 import math
-import winsound
 from utils import featureVector
 
 faces = pickle.load(open("faces_dataset", "rb"))
 digits = pickle.load(open("digits_dataset", "rb"))
-frequency = 2500  # Set Frequency To 2500 Hertz
-duration = 1000  # Set Duration To 1000 ms == 1 second
 
 def testNNFaces():
+	accuracy = []
 	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
 		numcorrect = 0
 		numtotal = len(faces.testData)
@@ -24,19 +24,8 @@ def testNNFaces():
 			reality = faces.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
-		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
-	numcorrect = 0
-	numtotal = len(faces.testData)
-	trainFeatureVectors = []
-	for i in faces.trainData:
-		trainFeatureVectors.append(featureVector(i.image, 7, 6, 70, 60))
-	for i in range(0, numtotal):
-		prediction = NNClassifier(faces.testData[i], faces.trainData, trainFeatureVectors, 7, 6, 70, 60)
-		reality = faces.testData[i].label
-		if int(prediction) == int(reality):
-			numcorrect += 1
-	print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-	winsound.Beep(frequency, duration)
+		accuracy.append((numcorrect / numtotal))
+	return accuracy
 
 def testNNDigits():
 	for imageSetLength in range(int(len(digits.trainData) * 0.1), len(digits.trainData), int(len(digits.trainData) * 0.1)):
@@ -62,7 +51,6 @@ def testNNDigits():
 		if int(prediction) == int(reality):
 			numcorrect += 1
 	print('total accuracy on digits: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-	winsound.Beep(frequency, duration)
 
 def testPerceptronFaces():
 	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
@@ -85,7 +73,6 @@ def testPerceptronFaces():
 		if int(prediction) == int(reality):
 			numcorrect += 1
 	print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-	winsound.Beep(frequency, duration)
 
 def testPerceptronDigits():
 	trainingData = digits.trainData
@@ -99,7 +86,6 @@ def testPerceptronDigits():
 			reality = digits.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
-		winsound.Beep(frequency, duration)
 		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(trainingData) * 100))))
 	weights = perceptronDigitClassifierTrainer(trainingData)
 	numcorrect = 0
@@ -110,7 +96,6 @@ def testPerceptronDigits():
 		if int(prediction) == int(reality):
 			numcorrect += 1
 	print('total accuracy on digits: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-	winsound.Beep(frequency, duration * 10)
 
 def testNaiveBayesFace():
 	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
@@ -131,4 +116,43 @@ def testNaiveBayesFace():
 		if int(prediction) == int(reality):
 			numcorrect += 1
 	print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
-	winsound.Beep(frequency, duration)
+
+def graphAccuracy(algType, dataType, numberOfRuns):
+	accuracies = []
+	if dataType == 'Face':
+		if algType == 'Perceptron':
+			accuracies = [testPerceptronFaces() for i in range(0, numberOfRuns)]
+		elif algType == 'Naive Bayes':
+			accuracies = [testNaiveBayesFace() for i in range(0, numberOfRuns)]
+		else:
+			accuracies = [testNNFaces() for i in range(0, numberOfRuns)]
+	else:
+		if algType == 'Perceptron':
+			accuracies = [testPerceptronDigits() for i in range(0, numberOfRuns)]
+		# elif algType == 'naiveBayes':
+		# 	accuracies = [testNaiveBayesDigits() for i in range(0, numberOfRuns)]
+		else:
+			accuracies = [testNNDigits() for i in range(0, numberOfRuns)]
+
+	std = []
+	m = []
+	for i in range(0, len(accuracies[0])):
+		iValues = []
+		for a in accuracies:
+			iValues.append(a[i])
+		std.append(stdev(iValues))
+		m.append(mean(iValues))
+
+	xaxis = ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%']
+	fig, (ax1, ax2) = py.subplots(2, sharex=True)
+	fig.suptitle('Accuracy of ' + dataType + ' Classification Using the ' + algType + ' Algorithm')
+	ax1.set_ylabel('Mean Accuracy')
+	ax2.set_ylabel('Standard Deviation of Accuracy')
+	ax2.set_xlabel('% of Training Data Used')
+	ax1.plot(xaxis, m)
+	ax2.plot(xaxis, std)
+	locs, labels = py.xticks() 
+	py.xticks(locs, xaxis)
+	py.show()
+
+graphAccuracy('k-Nearest Neighbors', 'Face', 5)
