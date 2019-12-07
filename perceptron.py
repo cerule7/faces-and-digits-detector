@@ -1,5 +1,5 @@
 import random
-from utils import featureVector 
+from utils import featureVector, findHighestPrediction
 import pickle
 
 # returns vector of weights 
@@ -61,14 +61,14 @@ def isFace(image, weightVector):
 def perceptronDigitClassifierTrainer(trainData):
 	featureVectorList = list()  #list of feature vectors for each image in training data set
 	for i in trainData:
-		featureVectorList.append(featureVector(i.image, r=28, c=7, A=28, Y=28))
+		featureVectorList.append(featureVector(i.image, r=14, c=7, A=28, Y=28))
 	weightVector = [[random.random() for i in range(len(featureVectorList[1]))] for j in range(0, 10)]
 	biasVector = [random.random() for i in range(0, 10)]
 
 	perfectRun = False #boolean for when to stop training
 	iterations = 0 #counter for number of loops through training set
 
-	while (perfectRun is False and iterations < 50):
+	while (perfectRun is False and iterations < 1000):
 		successCounter = 0
 		predictorVector = [0 for x in range(0, 10)] #holds values of prediction for each digit respectively 
 
@@ -97,7 +97,7 @@ def perceptronDigitClassifierTrainer(trainData):
 						weightVector[int(trainData[i].label)][x] += featureVectorList[i][x] #enforcing ground truth weights
 						biasVector[int(trainData[i].label)] += 1
 						
-		if iterations % 10== 0:
+		if iterations % 100== 0:
 			print('training iteration {} complete'.format(iterations))
 		iterations += 1
 
@@ -105,17 +105,8 @@ def perceptronDigitClassifierTrainer(trainData):
 		weightVector[i].append(biasVector[i])
 	return weightVector
 
-def findHighestPrediction(predictions):
-	maxIndex = 0
-	maxValue = predictions[0]
-	for i in range(0, len(predictions)):
-		if predictions[i] > maxValue:
-			maxIndex = i
-			maxValue = predictions[i]
-	return maxIndex
-
 def whichDigit(image, weights):
-	imageFeatures = featureVector(image.image, r=28, c=7, A=28, Y=28)
+	imageFeatures = featureVector(image.image, r=14, c=7, A=28, Y=28)
 	predictionVector = [0 for x in range(0, 10)]
 	for i in range(0, len(weights)):
 		for j in range(0, len(weights[i])):

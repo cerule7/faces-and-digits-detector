@@ -1,82 +1,72 @@
-from utils import featureVector 
+from utils import featureVector, findHighestPrediction
+from numpy import empty
 
-def featureProbMatrixGen(numColumns, numRows, trainData, labelVector):
-    matrixVector = []
-    totalNumFeatures = (numColumns + 1) * (numRows + 1)
-    for i in len(labelVector):
-        matrixVector[i].append(None) #dummy values so we can index latter
-    for i in matrixVector:
-        for j in range(0, totalNumFeatures):
-            matrixVector[i].append(None) #again just making the data structure with empty values to index later
-        for k in range(0, trainData[i].size()):
-            matrixVector[i][k].append(0)
-    for i in trainData:
-        feature = featureVector(numColumns, numRows, trainData[i]) #feature vector for ith training image
-        for j in matrixVector[labelVector[i]]:
-            matrixVector[labelVector[i]][j][feature[j]] += 1
-             #adding one to position in probability matrix in position for each given feature and its respective value.
-             #Will divide by total after
-    for i in matrixVector:
-        for j in matrixVector[i]:
-            sum = 0  #total of  individual feature values
-            for k in matrixVector[i][j]:
-                sum += matrixVector[i][j][k]
-            for k in matrixVector[i][j]:
-                matrixVector[i][j][k] = matrixVector[i][j][k]/sum
+def featureProbMatrixGen(numColumns, numRows, numLabels, A, Y, trainData):
+    totalNumFeatures = len(featureVector(trainData[0].image, numRows, numColumns, A, Y))
+    matrixVector = [empty([totalNumFeatures, len(trainData)]) for x in range(0, numLabels)]
+    for i in range(0, len(trainData)):
+        feature = featureVector(trainData[i].image, numRows, numColumns, A, Y) #feature vector for ith training image
+
+        for j in range(0, len(matrixVector[int(trainData[i].label)])):
+            matrixVector[int(trainData[i].label)][j][feature[j]] += 1
+
+    for i in range(0, len(matrixVector)):
+        for j in range(0, len(matrixVector[i])):
+            total = 0  #total of  individual feature values
+            for k in range(0, len(matrixVector[i][j])):
+                total += matrixVector[i][j][k]
+            for k in range(0, len(matrixVector[i][j])):
+                matrixVector[i][j][k] /= total
 
     #The following is to avoid a potential multiply by zero later
-    for i in matrixVector:
-        for j in matrixVector[i]:
-            for k in matrixVector[i][j]:
+    for i in range(0, len(matrixVector)):
+        for j in range(0, len(matrixVector[i])):
+            for k in range(0, len(matrixVector[i][j])):
                 if(matrixVector[i][j][k] == 0):
                     matrixVector[i][j][k] = .0000000001
     return matrixVector
 
-        def isFaceBayes(image, train, labelVector, c, r):
-            matrixVector = featureProbMatrixGen(train, labelVector, c, r)
-            imageFeatures = featureVector(c, r, image)
-            probFace = 0
-            faceCount = 0
-            for i in labelVector:
-                if(labelVector[i] == 0):
-                    faceCount += 1
-            probFace = faceCount/len(labelVector)
-            probNotFace = 1 - probFace
-            probImageGivenFace = 1
-            for i in imageFeatures:
-                probImageGivenFace = probImageGivenFace * matrixVector[0][i][imageFeatures[i]]
-                #performing calculation as described in video at 13:00. Note, the 0 in the index is the face feature matrix
-            probImageGivenNotFace = 1
-            for i in imageFeatures:
-                probImageGivenFace = probImageGivenFace * matrixVector[1][i][imageFeatures[i]]
-                #Note, the 1 in the index is the not face feature matrix
-            probFaceGivenImage = probImageGivenFace * probFace
-            probNotFaceGivenImage = probImageGivenNotFace * probNotFace
-            if(probFaceGivenImage > probNotFaceGivenImage):
-                return 0
-            return 1
+def isFaceBayes(image, trainingData, c, r):
+    matrixVector = featureProbMatrixGen(c, r, 2, A=70, Y=60, trainData=trainingData)
+    imageFeatures = featureVector(image.image, r=10, c=10, A=70, Y=60)
+    probFace = 0
+    faceCount = 0
+    for i in trainingData:
+        if(int(i.label) == 1):
+            faceCount += 1
+    probFace = faceCount / len(trainingData)
+    probNotFace = 1 - probFace
+    probImageGivenFace = 1
+    for i in range(0, len(imageFeatures)):
+        probImageGivenFace *= matrixVector[0][i][imageFeatures[i]]
+        # the 0 in the index is the face feature matrix
+    probImageGivenNotFace = 1
+    for i in range(0, len(imageFeatures)):
+        probImageGivenNotFace *= matrixVector[1][i][imageFeatures[i]]
+        # the 1 in the index is the not face feature matrix
+    probFaceGivenImage = probImageGivenFace * probFace
+    probNotFaceGivenImage = probImageGivenNotFace * probNotFace
+    if(probFaceGivenImage > probNotFaceGivenImage):
+        return 0
+    return 1
 
-        def whatDigitBayes(image, train, labelVector, c, r):
-            matrixVector =  featureProbMatrixGen(train, labelVector, c, r)
-	        imageFeatures = featureVectorGenerator(c, r, image)
-            digitProbibilities = [] #vector of probabilities for each digit
-            q = 0
-            while(q < 10):
-                digitProbibilities.append(0) #dummy values for indexing
-            for i in labelVector:
-                digitProbibilities[labelVector[i]] += 1
-            for i in digitProbibilities:
-                digitProbabilities[i] = digitProbabilities[i]/len(labelVector)
+def whichDigitBayes(image, trainingData, c, r):
+    matrixVector = featureProbMatrixGen(c, r, 10, A=28, Y=28, trainData=trainingData)
+    imageFeatures = featureVector(image, r=14, c=14, A=28, Y=28)
+    digitProbabilities = [0 for x in range(0, 10)]
 
-            probImageGivenDigits = []  #vector of necessary conditional probabilities
-            k = 0
-            while(k < 10):
-                probImageGivenDigits[i] = 1
-            for i in probImageGivenDigits
-                for j in imageFeatures:
-                    probImageGivenDigits[i] = probImageGivenDigits[i] * matrixVector[i][j][imageFeatures[j]]
-            probDigitsGivenImage = [] #final list of probabilities to compare
-            for i in probImageGivenDigits:
-                probDigitsGivenImage.append(probImageGivenDigits[i]*digitProbabilities[i]
+    for i in range(0, len(trainingData)):
+        digitProbabilities[int(trainingData[i].label)] += 1
 
-            return probDigitsGivenImage.index(max(probDigitsGivenImage))
+    for i in digitProbabilities:
+        digitProbabilities[i] /= len(trainingData)
+
+    probImageGivenDigits = [1 for i in range(0, 10)]  #vector of necessary conditional probabilities
+
+    for i in range(0, len(probImageGivenDigits)):
+        for j in range(0, len(imageFeatures)):
+            probImageGivenDigits[i] *= matrixVector[i][j][imageFeatures[j]]
+
+    probDigitsGivenImage = [probImageGivenDigits[i] * digitProbabilities[i] for i in range(0, len(probImageGivenDigits))] 
+
+    return findHighestPrediction(probDigitsGivenImage)

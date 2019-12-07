@@ -18,6 +18,15 @@ def featureVector(image, r, c, A, Y):
                     featCount += 1
     return featVector
 
+def findHighestPrediction(predictions):
+    maxIndex = 0
+    maxValue = predictions[0]
+    for i in range(0, len(predictions)):
+        if predictions[i] > maxValue:
+            maxIndex = i
+            maxValue = predictions[i]
+    return maxIndex
+
 # digits = pickle.load(open( "digits_dataset", "rb"))
 # print(featureVector(digits.testData[0].image, 14, 14, 28, 28))
 # print(featureVector(digits.testData[1].image, 14, 14, 28, 28))

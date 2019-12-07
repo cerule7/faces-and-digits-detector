@@ -1,10 +1,15 @@
 from perceptron import isFace, perceptronFaceClassifierTrainer, whichDigit, perceptronDigitClassifierTrainer
+from naiveBayes import isFaceBayes
 import pickle
 import random
 import math
+import winsound
 
 faces = pickle.load(open("faces_dataset", "rb"))
 digits = pickle.load(open("digits_dataset", "rb"))
+frequency = 2500  # Set Frequency To 2500 Hertz
+duration = 1000  # Set Duration To 1000 ms == 1 second
+
 
 def testPerceptronFaces():
 	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
@@ -17,18 +22,66 @@ def testPerceptronFaces():
 			if int(prediction) == int(reality):
 				numcorrect += 1
 		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
-
+	# to catch the 100%
+	if len(faces.trainData) % int(len(faces.trainData) * 0.1) != 0:
+		weights = perceptronFaceClassifierTrainer(faces.trainData)
+		numcorrect = 0
+		numtotal = len(faces.testData)
+		for i in range(0, numtotal):
+			prediction = isFace(faces.testData[i], weights)
+			reality = faces.testData[i].label
+			if int(prediction) == int(reality):
+				numcorrect += 1
+		print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+		winsound.Beep(frequency, duration)
 
 def testPerceptronDigits():
-	for imageSetLength in range(int(len(digits.trainData) * 0.1), len(digits.trainData), int(len(digits.trainData) * 0.1)):
-		weights = perceptronDigitClassifierTrainer(digits.trainData[0:imageSetLength])
+	trainingData = digits.trainData
+	random.shuffle(trainingData)
+	for imageSetLength in range(int(len(trainingData) * 0.1), len(trainingData), int(len(trainingData) * 0.1)):
+		weights = perceptronDigitClassifierTrainer(trainingData[0:imageSetLength])
 		numcorrect = 0
-		numtotal = len(digits.testData)
+		numtotal = int(len(digits.testData) * 0.10)
 		for i in range(0, numtotal):
 			prediction = whichDigit(digits.testData[i], weights)
 			reality = digits.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
-		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(digits.trainData) * 100))))
+		winsound.Beep(frequency, duration)
+		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(trainingData) * 100))))
+	# to catch the 100%
+	if len(trainingData) % int(len(trainingData) * 0.1) != 0:
+		weights = perceptronDigitClassifierTrainer(trainingData)
+		numcorrect = 0
+		numtotal = int(len(digits.testData) * 0.10)
+		for i in range(0, numtotal):
+			prediction = whichDigit(digits.testData[i], weights)
+			reality = digits.testData[i].label
+			if int(prediction) == int(reality):
+				numcorrect += 1
+		print('total accuracy on digits: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+		winsound.Beep(frequency, duration * 10)
 
-testPerceptronDigits()
+def testNaiveBayesFace():
+	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
+		numcorrect = 0
+		numtotal = len(faces.testData)
+		for i in range(0, numtotal):
+			prediction = isFaceBayes(faces.testData[i], faces.trainData[0:imageSetLength], 14, 14)
+			reality = faces.testData[i].label
+			if int(prediction) == int(reality):
+				numcorrect += 1
+		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
+	# to catch the 100%
+	if len(faces.trainData) % int(len(faces.trainData) * 0.1) != 0:
+		numcorrect = 0
+		numtotal = len(faces.testData)
+		for i in range(0, numtotal):
+			prediction = isFaceBayes(faces.testData[i], faces.trainData, 14, 14)
+			reality = faces.testData[i].label
+			if int(prediction) == int(reality):
+				numcorrect += 1
+		print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+		winsound.Beep(frequency, duration)
+
+testNaiveBayesFace()
