@@ -2,17 +2,10 @@ import random
 from utils import featureVector, findHighestPrediction
 import pickle
 
-<<<<<<< HEAD
-# returns vector of weights
-def perceptronFaceClassifierTrainer(numColumns, numRows, trainData, labelVector):
-	totalNumFeatures = (numColumns + 1) * (numRows + 1)
-	featureVectorList = [] #list of feature vectors for each image in training data set
-=======
 # returns vector of weights 
 def perceptronFaceClassifierTrainer(trainData):
 	featureVectorList = list()  #list of feature vectors for each image in training data set
 
->>>>>>> 635ec2c653d928de6cd650d37d58419af2b512bd
 	for i in trainData:
 		featureVectorList.append(featureVector(i.image, r=10, c=10, A=70, Y=60))
 
@@ -21,11 +14,7 @@ def perceptronFaceClassifierTrainer(trainData):
 	bias = random.random()
 	perfectRun = False #boolean for when to stop training
 	iterations = 0 #counter for number of loops through training set
-<<<<<<< HEAD
-	while (perfectRun is False or iterations < 9999):
-=======
 	while (perfectRun is False and iterations < 1500): 
->>>>>>> 635ec2c653d928de6cd650d37d58419af2b512bd
 		successCounter = 0
 		for i in range(0, len(trainData)):
 			predFunction = 0
@@ -62,34 +51,12 @@ def perceptronFaceClassifierTrainer(trainData):
 def isFace(image, weightVector):
 	imageFeatures = featureVector(image.image, r=10, c=10, A=70, Y=60)
 	predFunction = 0
-<<<<<<< HEAD
 	for i in imageFeatures:
 		predFunction += imageFeatures[i] * weightVector[i]
 	predFunction += weightVector[len(weightVector) - 1] #bias
 	if (predFunction <= 0):
 		return 0
 	return 1
-
-# to do
-# def perceptronDigitClassifierTrainer(numColumns, numRows, trainData, labelVector):
-# 	totalNumFeatures = (numColumns + 1) * (numRow + 1)
-# 	featureVectorList = [] #list of feature vectors for each image in training data set
-# 	for i in train:
-# 		featureVectorList.append(featureVector(numColumns, numRows, trainData[i]))
-# 	weightVectors = [][] #list of weight vectors for each digit
-# 	for i in weightVectors:
-# 		for j in weightVectors[i]:
-# 			weightVectors[i][j] = random.random()
-# 	biasVector = []
-# 	for i in biasVector:
-# 		biasVector[i] = random.random()
-=======
-	for i in range(0, len(imageFeatures)):
-		predFunction += imageFeatures[i] * weightVector[i] 
-	predFunction += weightVector[len(weightVector) - 1] #bias
-	if (predFunction > 0):
-		return 1
-	return 0
 
 def perceptronDigitClassifierTrainer(trainData):
 	featureVectorList = list()  #list of feature vectors for each image in training data set
@@ -148,6 +115,3 @@ def whichDigit(image, weights):
 			else: 
 				predictionVector[i] += weights[i][j] #adding bias
 	return findHighestPrediction(predictionVector)
-
-
->>>>>>> 635ec2c653d928de6cd650d37d58419af2b512bd

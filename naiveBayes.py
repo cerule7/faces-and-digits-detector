@@ -1,9 +1,9 @@
 from utils import featureVector, findHighestPrediction
-from numpy import empty
+from numpy import ones
 
 def featureProbMatrixGen(numColumns, numRows, numLabels, A, Y, trainData):
     totalNumFeatures = len(featureVector(trainData[0].image, numRows, numColumns, A, Y))
-    matrixVector = [empty([totalNumFeatures, len(trainData)]) for x in range(0, numLabels)]
+    matrixVector = [ones([totalNumFeatures, len(trainData)]) for x in range(0, numLabels)]
     for i in range(0, len(trainData)):
         feature = featureVector(trainData[i].image, numRows, numColumns, A, Y) #feature vector for ith training image
 
