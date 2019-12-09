@@ -1,5 +1,5 @@
 from perceptron import isFace, perceptronFaceClassifierTrainer, whichDigit, perceptronDigitClassifierTrainer
-from naiveBayes import isFaceBayes
+from naiveBayes import isFaceBayes, whichDigitBayes, featureProbMatrixGen
 from nearestNeighbors import NNClassifier
 import pickle
 import random
@@ -28,9 +28,10 @@ def testNNFaces():
 	return accuracy
 
 def testNNDigits():
+	accuracy = []
 	for imageSetLength in range(int(len(digits.trainData) * 0.1), len(digits.trainData), int(len(digits.trainData) * 0.1)):
 		numcorrect = 0
-		numtotal = len(digits.testData)
+		numtotal = int(len(digits.testData) * 0.10)
 		trainFeatureVectors = []
 		for i in digits.trainData[0:imageSetLength]:
 			trainFeatureVectors.append(featureVector(i.image, 4, 14, 28, 28))
@@ -39,9 +40,9 @@ def testNNDigits():
 			reality = digits.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
-		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(digits.trainData) * 100))))
+		accuracy.append((numcorrect / numtotal))
 	numcorrect = 0
-	numtotal = len(digits.testData)
+	numtotal = int(len(digits.testData) * 0.10)
 	trainFeatureVectors = []
 	for i in digits.trainData:
 		trainFeatureVectors.append(featureVector(i.image, 4, 14, 28, 28))
@@ -50,9 +51,11 @@ def testNNDigits():
 		reality = digits.testData[i].label
 		if int(prediction) == int(reality):
 			numcorrect += 1
-	print('total accuracy on digits: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+	accuracy.append((numcorrect / numtotal))
+	return accuracy
 
 def testPerceptronFaces():
+	accuracy = []
 	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
 		weights = perceptronFaceClassifierTrainer(faces.trainData[0:imageSetLength])
 		numcorrect = 0
@@ -62,21 +65,13 @@ def testPerceptronFaces():
 			reality = faces.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
+		accuracy.append(numcorrect / numtotal)
 		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
-	# to catch the 100%
-	weights = perceptronFaceClassifierTrainer(faces.trainData)
-	numcorrect = 0
-	numtotal = len(faces.testData)
-	for i in range(0, numtotal):
-		prediction = isFace(faces.testData[i], weights)
-		reality = faces.testData[i].label
-		if int(prediction) == int(reality):
-			numcorrect += 1
-	print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+	return accuracy
 
 def testPerceptronDigits():
+	accuracy = []
 	trainingData = digits.trainData
-	random.shuffle(trainingData)
 	for imageSetLength in range(int(len(trainingData) * 0.1), len(trainingData), int(len(trainingData) * 0.1)):
 		weights = perceptronDigitClassifierTrainer(trainingData[0:imageSetLength])
 		numcorrect = 0
@@ -86,7 +81,8 @@ def testPerceptronDigits():
 			reality = digits.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
-		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(trainingData) * 100))))
+		accuracy.append((numcorrect / numtotal))
+		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(digits.trainData) * 100))))
 	weights = perceptronDigitClassifierTrainer(trainingData)
 	numcorrect = 0
 	numtotal = int(len(digits.testData) * 0.10)
@@ -95,27 +91,46 @@ def testPerceptronDigits():
 		reality = digits.testData[i].label
 		if int(prediction) == int(reality):
 			numcorrect += 1
-	print('total accuracy on digits: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+	accuracy.append((numcorrect / numtotal))
+	return accuracy
 
 def testNaiveBayesFace():
+	accuracy = []
 	for imageSetLength in range(int(len(faces.trainData) * 0.1), len(faces.trainData), int(len(faces.trainData) * 0.1)):
 		numcorrect = 0
 		numtotal = len(faces.testData)
+		matrixVector = featureProbMatrixGen(10, 10, 2, A=70, Y=60, trainData= faces.trainData[0:imageSetLength])
 		for i in range(0, numtotal):
-			prediction = isFaceBayes(faces.testData[i], faces.trainData[0:imageSetLength], 14, 14)
+			prediction = isFaceBayes(faces.testData[i], faces.trainData[0:imageSetLength], matrixVector, 10, 10)
 			reality = faces.testData[i].label
 			if int(prediction) == int(reality):
 				numcorrect += 1
-		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
+		accuracy.append((numcorrect / numtotal))
+	return accuracy
+
+def testNaiveBayesDigits():
+	accuracy = []
+	for imageSetLength in range(int(len(digits.trainData) * 0.1), len(digits.trainData), int(len(digits.trainData) * 0.1)):
+		numcorrect = 0
+		numtotal = int(len(digits.testData) * 0.10)
+		matrixVector = featureProbMatrixGen(14, 7, 10, A=28, Y=28, trainData= digits.trainData[0:imageSetLength])
+		for i in range(0, numtotal):
+			prediction = whichDigitBayes(digits.testData[i], digits.trainData[0:imageSetLength], matrixVector, 14, 7)
+			reality = digits.testData[i].label
+			if int(prediction) == int(reality):
+				numcorrect += 1
+		accuracy.append((numcorrect / numtotal))
 	# to catch the 100%
 	numcorrect = 0
-	numtotal = len(faces.testData)
+	numtotal = int(len(digits.testData) * 0.10)
+	matrixVector = featureProbMatrixGen(14, 7, 10, A=28, Y=28, trainData= digits.trainData)
 	for i in range(0, numtotal):
-		prediction = isFaceBayes(faces.testData[i], faces.trainData, 14, 14)
-		reality = faces.testData[i].label
+		prediction = whichDigitBayes(digits.testData[i], digits.trainData, matrixVector, 14, 7)
+		reality = digits.testData[i].label
 		if int(prediction) == int(reality):
 			numcorrect += 1
-	print('total accuracy on faces: {}% using 100% of training data'.format((numcorrect / numtotal) * 100))
+	accuracy.append((numcorrect / numtotal))
+	return accuracy
 
 def graphAccuracy(algType, dataType, numberOfRuns):
 	accuracies = []
@@ -129,8 +144,8 @@ def graphAccuracy(algType, dataType, numberOfRuns):
 	else:
 		if algType == 'Perceptron':
 			accuracies = [testPerceptronDigits() for i in range(0, numberOfRuns)]
-		# elif algType == 'naiveBayes':
-		# 	accuracies = [testNaiveBayesDigits() for i in range(0, numberOfRuns)]
+		elif algType == 'Naive Bayes':
+			accuracies = [testNaiveBayesDigits() for i in range(0, numberOfRuns)]
 		else:
 			accuracies = [testNNDigits() for i in range(0, numberOfRuns)]
 
@@ -155,4 +170,4 @@ def graphAccuracy(algType, dataType, numberOfRuns):
 	py.xticks(locs, xaxis)
 	py.show()
 
-graphAccuracy('k-Nearest Neighbors', 'Face', 5)
+graphAccuracy('Perceptron', 'Digit', 5)

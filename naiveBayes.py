@@ -26,9 +26,8 @@ def featureProbMatrixGen(numColumns, numRows, numLabels, A, Y, trainData):
                     matrixVector[i][j][k] = .001
     return matrixVector
 
-def isFaceBayes(image, trainingData, c, r):
-    matrixVector = featureProbMatrixGen(c, r, 2, A=70, Y=60, trainData=trainingData)
-    imageFeatures = featureVector(image.image, r=10, c=10, A=70, Y=60)
+def isFaceBayes(image, trainingData, matrixVector, r, c):
+    imageFeatures = featureVector(image.image, r, c, A=70, Y=60)
     faceCount = 0
     for i in trainingData:
         if(int(i.label) == 1):
@@ -46,18 +45,17 @@ def isFaceBayes(image, trainingData, c, r):
     probFaceGivenImage = probImageGivenFace * probFace
     probNotFaceGivenImage = probImageGivenNotFace * probNotFace
     if(probFaceGivenImage > probNotFaceGivenImage):
-        return 1
-    return 0
+        return 0
+    return 1
 
-def whichDigitBayes(image, trainingData, c, r):
-    matrixVector = featureProbMatrixGen(c, r, 10, A=28, Y=28, trainData=trainingData)
-    imageFeatures = featureVector(image, r=14, c=14, A=28, Y=28)
+def whichDigitBayes(image, trainingData, matrixVector, c, r):
+    imageFeatures = featureVector(image.image, r, c, A=28, Y=28)
     digitProbabilities = [0 for x in range(0, 10)]
 
     for i in range(0, len(trainingData)):
         digitProbabilities[int(trainingData[i].label)] += 1
 
-    for i in digitProbabilities:
+    for i in range(0, len(digitProbabilities)):
         digitProbabilities[i] /= len(trainingData)
 
     probImageGivenDigits = [1 for i in range(0, 10)]  #vector of necessary conditional probabilities

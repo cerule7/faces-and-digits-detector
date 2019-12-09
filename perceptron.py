@@ -1,6 +1,5 @@
 import random
 from utils import featureVector, findHighestPrediction
-import pickle
 
 # returns vector of weights 
 def perceptronFaceClassifierTrainer(trainData):
@@ -14,7 +13,7 @@ def perceptronFaceClassifierTrainer(trainData):
 	bias = random.random()
 	perfectRun = False #boolean for when to stop training
 	iterations = 0 #counter for number of loops through training set
-	while (perfectRun is False and iterations < 1500): 
+	while (perfectRun is False and iterations < 1000): 
 		successCounter = 0
 		for i in range(0, len(trainData)):
 			predFunction = 0
@@ -36,13 +35,10 @@ def perceptronFaceClassifierTrainer(trainData):
 				for j in range(0, len(featureVectorList[i])):
 					weightVector[j] += featureVectorList[i][j]
 				bias += 1
-				# print('in loop {} '.format(weightVector[2]))
 			elif(prediction > 0):
 				for j in range(0, len(featureVectorList[i])):
 					weightVector[j] -= featureVectorList[i][j]
 				bias -= 1
-		if iterations % 100== 0:
-			print('training iteration {} complete'.format(iterations))
 		iterations += 1
 	weightVector.append(bias)
 	return weightVector
@@ -51,12 +47,12 @@ def perceptronFaceClassifierTrainer(trainData):
 def isFace(image, weightVector):
 	imageFeatures = featureVector(image.image, r=10, c=10, A=70, Y=60)
 	predFunction = 0
-	for i in imageFeatures:
-		predFunction += imageFeatures[i] * weightVector[i]
+	for i in range(0, len(imageFeatures)):
+		predFunction += imageFeatures[i] * weightVector[i] 
 	predFunction += weightVector[len(weightVector) - 1] #bias
-	if (predFunction <= 0):
-		return 0
-	return 1
+	if (predFunction > 0):
+		return 1
+	return 0
 
 def perceptronDigitClassifierTrainer(trainData):
 	featureVectorList = list()  #list of feature vectors for each image in training data set
@@ -68,7 +64,7 @@ def perceptronDigitClassifierTrainer(trainData):
 	perfectRun = False #boolean for when to stop training
 	iterations = 0 #counter for number of loops through training set
 
-	while (perfectRun is False and iterations < 1000):
+	while (perfectRun is False and iterations < 100):
 		successCounter = 0
 		predictorVector = [0 for x in range(0, 10)] #holds values of prediction for each digit respectively 
 
@@ -97,8 +93,6 @@ def perceptronDigitClassifierTrainer(trainData):
 						weightVector[int(trainData[i].label)][x] += featureVectorList[i][x] #enforcing ground truth weights
 						biasVector[int(trainData[i].label)] += 1
 						
-		if iterations % 100== 0:
-			print('training iteration {} complete'.format(iterations))
 		iterations += 1
 
 	for i in range(0, len(weightVector)):
