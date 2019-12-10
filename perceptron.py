@@ -39,6 +39,8 @@ def perceptronFaceClassifierTrainer(trainData):
 				for j in range(0, len(featureVectorList[i])):
 					weightVector[j] -= featureVectorList[i][j]
 				bias -= 1
+		if iterations % 100 == 0:
+			print('iteration {} of 1000'.format(iterations))
 		iterations += 1
 	weightVector.append(bias)
 	return weightVector
@@ -92,7 +94,8 @@ def perceptronDigitClassifierTrainer(trainData):
 						biasVector[prediction] -= 1
 						weightVector[int(trainData[i].label)][x] += featureVectorList[i][x] #enforcing ground truth weights
 						biasVector[int(trainData[i].label)] += 1
-						
+		if iterations % 10 == 0:
+			print('iteration {} of 100'.format(iterations))
 		iterations += 1
 
 	for i in range(0, len(weightVector)):

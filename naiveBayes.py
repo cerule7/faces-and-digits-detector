@@ -6,7 +6,6 @@ def featureProbMatrixGen(numColumns, numRows, numLabels, A, Y, trainData):
     matrixVector = [ones([totalNumFeatures, len(trainData)]) for x in range(0, numLabels)]
     for i in range(0, len(trainData)):
         feature = featureVector(trainData[i].image, numRows, numColumns, A, Y) #feature vector for ith training image
-
         for j in range(0, len(matrixVector[int(trainData[i].label)])):
             matrixVector[int(trainData[i].label)][j][feature[j]] += 1
 

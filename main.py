@@ -2,7 +2,6 @@ from perceptron import isFace, perceptronFaceClassifierTrainer, whichDigit, perc
 from naiveBayes import isFaceBayes, whichDigitBayes, featureProbMatrixGen
 from nearestNeighbors import NNClassifier
 import pickle
-import random
 from statistics import stdev, mean
 import matplotlib.pyplot as py
 import math
@@ -66,7 +65,6 @@ def testPerceptronFaces():
 			if int(prediction) == int(reality):
 				numcorrect += 1
 		accuracy.append(numcorrect / numtotal)
-		print('total accuracy on faces: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(faces.trainData) * 100))))
 	return accuracy
 
 def testPerceptronDigits():
@@ -82,7 +80,6 @@ def testPerceptronDigits():
 			if int(prediction) == int(reality):
 				numcorrect += 1
 		accuracy.append((numcorrect / numtotal))
-		print('total accuracy on digits: {}% using {}% of training data'.format((numcorrect / numtotal) * 100, math.ceil((imageSetLength / len(digits.trainData) * 100))))
 	weights = perceptronDigitClassifierTrainer(trainingData)
 	numcorrect = 0
 	numtotal = int(len(digits.testData) * 0.10)
